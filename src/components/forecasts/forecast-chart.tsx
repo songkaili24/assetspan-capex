@@ -1,10 +1,10 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { FinancialChart, CHART_COLORS } from "@/components/ui/financial-chart";
 import { Button } from "@/components/ui/button";
 import { downloadCsv } from "@/lib/csv";
-import { formatCompactCurrency } from "@/lib/format";
+import { formatCompactCurrency, formatCurrency } from "@/lib/format";
 import { computeForecast } from "@/lib/forecast";
 import type { Asset } from "@/lib/types";
 
@@ -16,12 +16,20 @@ const WIDTH = 720;
 const HEIGHT = 300;
 const PAD = { top: 20, right: 16, bottom: 32, left: 64 };
 
+interface HoverState {
+  index: number;
+  /** SVG user-unit x of the pointer */
+  x: number;
+}
+
 /**
  * Ten-year replacement cost projection with an AACE Class 4 confidence band,
- * nominal/present-dollar toggle, and CSV export of the full schedule.
+ * hover crosshair with P10/P50/P90 tooltips, and CSV export.
  */
 export function ForecastChart({ assets: _assets }: ForecastExplorerProps) {
   const [inflationOn, setInflationOn] = useState(true);
+  const [hover, setHover] = useState<HoverState | null>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const model = useMemo(() => computeForecast(inflationOn ? 3.1 : 0), [inflationOn]);
 
   const max = Math.max(...model.p90ByYear) * 1.12;
@@ -64,6 +72,20 @@ export function ForecastChart({ assets: _assets }: ForecastExplorerProps) {
     );
   };
 
+  const handlePointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    const svgX = ((e.clientX - rect.left) / rect.width) * WIDTH;
+    const step = plotW / (model.years.length - 1);
+    const index = Math.round((svgX - PAD.left) / step);
+    if (index < 0 || index > model.years.length - 1) {
+      setHover(null);
+      return;
+    }
+    setHover({ index, x: xFor(index) });
+  };
+
   return (
     <FinancialChart
       title="10-Year Replacement Cost Projection"
@@ -103,10 +125,13 @@ export function ForecastChart({ assets: _assets }: ForecastExplorerProps) {
         </div>
 
         <svg
+          ref={svgRef}
           viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-          className="min-h-0 w-full flex-1"
+          className="min-h-0 w-full flex-1 touch-none"
           role="img"
           aria-label="Ten-year replacement cost projection with confidence band"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => setHover(null)}
         >
           {[0, 0.25, 0.5, 0.75, 1].map((f) => (
             <g key={f}>
@@ -176,6 +201,73 @@ export function ForecastChart({ assets: _assets }: ForecastExplorerProps) {
               </text>
             </g>
           ))}
+
+          {/* Hover crosshair + tooltip */}
+          {hover && (
+            <g role="presentation">
+              <line
+                x1={hover.x}
+                x2={hover.x}
+                y1={PAD.top}
+                y2={PAD.top + plotH}
+                stroke={CHART_COLORS.gold}
+                strokeWidth="1.25"
+                strokeDasharray="3 3"
+              />
+              <circle
+                cx={hover.x}
+                cy={yFor(model.escalatedByYear[hover.index]!)}
+                r="5"
+                fill={CHART_COLORS.gold}
+                stroke="#FFFFFF"
+                strokeWidth="2"
+              />
+              <g
+                transform={`translate(${Math.min(hover.x + 12, WIDTH - 176)}, ${PAD.top + 8})`}
+                className="drop-shadow"
+              >
+                <rect width="164" height="78" rx="8" fill="#18181B" opacity="0.94" />
+                <text
+                  x="12"
+                  y="20"
+                  fontSize="11"
+                  fontWeight="700"
+                  fill="#FFFFFF"
+                  fontFamily="var(--font-spline-sans-mono)"
+                >
+                  FY{model.years[hover.index]}
+                </text>
+                <text
+                  x="12"
+                  y="38"
+                  fontSize="10"
+                  fill="#D4D4D8"
+                  fontFamily="var(--font-spline-sans-mono)"
+                >
+                  P90 {formatCompactCurrency(model.p90ByYear[hover.index]!)}
+                </text>
+                <text
+                  x="12"
+                  y="53"
+                  fontSize="10"
+                  fontWeight="600"
+                  fill="#FFFFFF"
+                  fontFamily="var(--font-spline-sans-mono)"
+                >
+                  P50 {formatCurrency(model.escalatedByYear[hover.index]!)}
+                </text>
+                <text
+                  x="12"
+                  y="68"
+                  fontSize="10"
+                  fill="#D4D4D8"
+                  fontFamily="var(--font-spline-sans-mono)"
+                >
+                  P10 {formatCompactCurrency(model.p10ByYear[hover.index]!)}
+                </text>
+              </g>
+            </g>
+          )}
         </svg>
       </div>
     </FinancialChart>
