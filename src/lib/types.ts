@@ -305,3 +305,104 @@ export interface ForecastModel {
   /** Replacement value of assets falling beyond the model horizon */
   beyondHorizon: number;
 }
+
+// ─── Depreciation configuration ──────────────────────────────────────────────
+
+export type DepreciationMethod = "Straight-Line" | "Declining Balance";
+
+export type DepreciationConvention = "Full Year" | "Half Year";
+
+export interface DepreciationClassDefault {
+  assetClass: AssetClass;
+  method: DepreciationMethod;
+  /** Declining balance rate as a % of straight-line (200 = double declining) */
+  decliningRatePct: number;
+  /** Salvage value as a % of replacement cost */
+  salvagePct: number;
+  convention: DepreciationConvention;
+}
+
+export interface DepreciationSchedulePoint {
+  year: number;
+  beginning: number;
+  expense: number;
+  accumulated: number;
+  ending: number;
+}
+
+// ─── Vendor management ───────────────────────────────────────────────────────
+
+export type VendorStatus = "Approved" | "Conditional" | "Under Review" | "Suspended";
+
+export interface VendorContact {
+  name: string;
+  title: string;
+  email: string;
+  phone: string;
+}
+
+export interface VendorBidHistoryEntry {
+  fiscalYear: number;
+  package: string;
+  amount: number;
+  outcome: "Awarded" | "Runner-up" | "Not selected";
+}
+
+export interface VendorPerformance {
+  /** 0–5 scale sub-ratings from completed project scorecards */
+  quality: number;
+  schedule: number;
+  safety: number;
+  /** Weighted average across completed scorecards */
+  avg: number;
+  scorecards: number;
+}
+
+export interface Vendor {
+  id: string;
+  name: string;
+  trades: AssetClass[];
+  location: string;
+  status: VendorStatus;
+  performance: VendorPerformance;
+  bidsSubmitted: number;
+  bidsAwarded: number;
+  totalAwardedValue: number;
+  /** Surety bonding single-project capacity */
+  bonding: string;
+  contacts: VendorContact[];
+  bidHistory: VendorBidHistoryEntry[];
+}
+
+// ─── Approval workflow configuration ─────────────────────────────────────────
+
+export type ApprovalTrigger =
+  "Change Order" | "New Project" | "Scenario Approval" | "Asset Write-Off";
+
+export type ApproverRole =
+  | "Project Manager"
+  | "Director, Asset Management"
+  | "Regional VP"
+  | "Investment Committee"
+  | "Board";
+
+export interface ApprovalRoutingRule {
+  id: string;
+  trigger: ApprovalTrigger;
+  /** Inclusive lower bound of the delegation band, USD */
+  minAmount: number;
+  /** Exclusive upper bound, or null for uncapped */
+  maxAmount: number | null;
+  routeTo: ApproverRole;
+  /** Review SLA in business days */
+  slaDays: number;
+}
+
+export interface EscalationThreshold {
+  id: string;
+  label: string;
+  minAmount: number;
+  maxAmount: number | null;
+  approver: ApproverRole;
+  note: string;
+}
