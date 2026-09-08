@@ -1,10 +1,10 @@
 import { cn } from "@/lib/utils";
+import { formatCompactCurrency } from "@/lib/format";
 
 export interface PortfolioHealthScoreProps {
   score: number;
   /** Facility Condition Index, 0 (best) → 1 (worst) */
   fci: number;
-  /** Deferred capital backlog in USD */
   deferredBacklog: number;
   fundedRatio: number;
   className?: string;
@@ -86,9 +86,9 @@ export function PortfolioHealthScore({
               Deferred Backlog
             </dt>
             <dd className="mt-1 font-mono text-figure-lg font-semibold tabular-nums text-gold-700">
-              ${(deferredBacklog / 1_000_000).toFixed(1)}M
+              {formatCompactCurrency(deferredBacklog)}
             </dd>
-            <dd className="mt-0.5 text-[11px] text-charcoal-500">Across 6 assets</dd>
+            <dd className="mt-0.5 text-[11px] text-charcoal-500">Poor + Critical in place</dd>
           </div>
           <div className="rounded-lg bg-charcoal-50 p-3">
             <dt className="text-[10px] font-medium uppercase tracking-wider text-charcoal-500">
@@ -102,7 +102,7 @@ export function PortfolioHealthScore({
             >
               {(fundedRatio * 100).toFixed(0)}%
             </dd>
-            <dd className="mt-0.5 text-[11px] text-charcoal-500">vs. FY2026 requirement</dd>
+            <dd className="mt-0.5 text-[11px] text-charcoal-500">vs. 10-yr requirement</dd>
           </div>
         </dl>
       </div>
