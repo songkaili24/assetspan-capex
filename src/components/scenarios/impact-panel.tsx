@@ -17,8 +17,18 @@ export function ImpactPanel({ impact }: { impact: ScenarioImpact }) {
     {
       label: "Funded Ratio (10-yr)",
       value: `${Math.round(impact.fundedRatio * 100)}%`,
-      delta: impact.fundedRatio >= 1 ? "Fully funded" : "Below requirement",
-      tone: impact.fundedRatio >= 1 ? "text-chart-underBudget" : "text-chart-overBudget",
+      // A cumulative ratio ≥ 100% can still coexist with timing deferrals —
+      // never call the plan "fully funded" while critical assets slip.
+      delta:
+        impact.criticalAssetsDeferred > 0
+          ? "Funded — critical assets deferred"
+          : impact.fundedRatio >= 1
+            ? "Fully funded"
+            : "Below requirement",
+      tone:
+        impact.fundedRatio >= 1 && impact.criticalAssetsDeferred === 0
+          ? "text-chart-underBudget"
+          : "text-chart-overBudget",
     },
     {
       label: "Assets Deferred",
