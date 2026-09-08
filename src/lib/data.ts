@@ -4,4 +4,6 @@
 export * from "./data/portfolio";
 export * from "./data/assets";
 export * from "./data/planning";
-export * from "./data/procurement";
+export * from "./data/projects";
+export * from "./data/bids";
+export * from "./data/reports-data";
