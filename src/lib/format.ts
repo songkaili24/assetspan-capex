@@ -39,12 +39,17 @@ export function formatCurrencyExact(value: number): string {
   return usdCents.format(value);
 }
 
-/** $1.24M / $845K style — for chart axes, KPI tiles, and dense tables. */
+/**
+ * $1.24M / $845K style — for chart axes, KPI tiles, and dense tables. The
+ * sign leads the whole figure (-$4.00M) and the K band groups through the
+ * K/M rounding boundary ($1,000K).
+ */
 export function formatCompactCurrency(value: number): string {
   const abs = Math.abs(value);
-  if (abs >= 1_000_000_000) return `$${(value / 1_000_000_000).toFixed(2)}B`;
-  if (abs >= 1_000_000) return `$${(value / 1_000_000).toFixed(2)}M`;
-  if (abs >= 1_000) return `$${(value / 1_000).toFixed(0)}K`;
+  const sign = value < 0 ? "-" : "";
+  if (abs >= 1_000_000_000) return `${sign}$${(abs / 1_000_000_000).toFixed(2)}B`;
+  if (abs >= 1_000_000) return `${sign}$${(abs / 1_000_000).toFixed(2)}M`;
+  if (abs >= 1_000) return `${sign}$${int.format(Math.round(abs / 1_000))}K`;
   return usd.format(value);
 }
 
