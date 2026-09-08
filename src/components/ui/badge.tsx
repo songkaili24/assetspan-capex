@@ -37,13 +37,20 @@ export function ConditionBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-md font-medium uppercase tracking-wide ring-1 ring-inset",
+        "inline-flex items-center gap-1.5 rounded-md font-medium uppercase tracking-wide ring-1 ring-inset transition-colors duration-500 motion-reduce:transition-none",
         size === "sm" ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-xs",
         CONDITION_STYLES[condition],
         className,
       )}
     >
-      {withDot && <span className={cn("size-1.5 rounded-full", CONDITION_DOT[condition])} />}
+      {withDot && (
+        <span
+          className={cn(
+            "size-1.5 rounded-full transition-colors duration-500 motion-reduce:transition-none",
+            CONDITION_DOT[condition],
+          )}
+        />
+      )}
       {condition}
     </span>
   );
