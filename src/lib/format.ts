@@ -74,3 +74,21 @@ export function formatFiscalYear(year: number): string {
 export function formatSquareFeet(value: number): string {
   return `${int.format(value)} SF`;
 }
+
+const date = new Intl.DateTimeFormat("en-US", {
+  month: "short",
+  day: "numeric",
+  year: "numeric",
+});
+
+const monthYear = new Intl.DateTimeFormat("en-US", { month: "short", year: "numeric" });
+
+/** "Jan 12, 2026" — install dates, inspections, maintenance records. */
+export function formatDate(iso: string): string {
+  return date.format(new Date(`${iso}T00:00:00`));
+}
+
+/** "Jan 2026" — warranty expirations and report periods. */
+export function formatMonthYear(iso: string): string {
+  return monthYear.format(new Date(`${iso}T00:00:00`));
+}
