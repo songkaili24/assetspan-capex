@@ -7,3 +7,5 @@ export * from "./data/planning";
 export * from "./data/projects";
 export * from "./data/bids";
 export * from "./data/reports-data";
+export * from "./data/vendors";
+export * from "./data/approvals";
