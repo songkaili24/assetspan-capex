@@ -128,9 +128,8 @@ export function VendorDetailModal({ vendor, onClose }: VendorDetailModalProps) {
           </div>
 
           <p className="rounded-lg bg-charcoal-50 px-4 py-3 text-xs leading-relaxed text-charcoal-500">
-            Bonding capacity {vendor.bonding.toLowerCase()} · {vendor.bidsAwarded} of{" "}
-            {vendor.bidsSubmitted} bids awarded lifetime. Performance ratings feed the
-            prequalification score on the next{" "}
+            Bonding capacity {vendor.bonding} · {vendor.bidsAwarded} of {vendor.bidsSubmitted} bids
+            awarded lifetime. Performance ratings feed the prequalification score on the next{" "}
             <Link href="/bids" className="font-medium text-gold-700 hover:text-gold-800">
               bid tabulation
             </Link>
