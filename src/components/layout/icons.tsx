@@ -95,3 +95,25 @@ export const CheckIcon = (p: IconProps) => (
     <path d="m5 13 4 4L19 7" />
   </Base>
 );
+
+export const DepreciationIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M3 20h18" />
+    <path d="M4 16V8m0 8h5V12m0 4h5v-7m0 7h5V6" />
+  </Base>
+);
+
+export const ApprovalIcon = (p: IconProps) => (
+  <Base {...p}>
+    <circle cx="9" cy="8" r="3" />
+    <path d="M4 20c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+    <path d="m15 9 2 2 4-4" />
+  </Base>
+);
+
+export const VendorIcon = (p: IconProps) => (
+  <Base {...p}>
+    <path d="M4 7h16l-1 13H5L4 7Z" />
+    <path d="M8 10V6a4 4 0 0 1 8 0v4" />
+  </Base>
+);
