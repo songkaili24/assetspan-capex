@@ -74,8 +74,17 @@ export function buildDepreciationSchedule(params: {
     let accumulated = 0;
     for (let year = 1; year <= usefulLifeYears; year++) {
       const beginning = cost - accumulated;
-      // Half-year: 0.5 in year 1, 1.5 in the final year, 1.0 between.
-      const factor = !halfYear ? 1 : year === 1 ? 0.5 : year === usefulLifeYears ? 1.5 : 1;
+      // Half-year: 0.5 in year 1, 1.5 in the final year, 1.0 between. A
+      // single-period life books the full expense either way — otherwise the
+      // 0.5x branch would strand half the basis with no period to recover it.
+      const factor =
+        !halfYear || usefulLifeYears === 1
+          ? 1
+          : year === 1
+            ? 0.5
+            : year === usefulLifeYears
+              ? 1.5
+              : 1;
       const expense = annual * factor;
       accumulated += expense;
       schedule.push({
@@ -90,17 +99,15 @@ export function buildDepreciationSchedule(params: {
   }
 
   // Declining balance — rate applies to beginning book value; final year
-  // true-ups to salvage so the asset doesn't strand basis.
+  // true-ups to salvage so the asset doesn't strand basis. A single-period
+  // life books straight to salvage for the same reason as straight-line.
   const rate = decliningRatePct / 100 / usefulLifeYears;
   let book = cost;
   let accumulated = 0;
   for (let year = 1; year <= usefulLifeYears; year++) {
     const beginning = book;
     const isFinal = year === usefulLifeYears;
-    let expense = book * rate * (halfYear && year === 1 ? 0.5 : 1);
-    if (isFinal || book - expense < salvage) {
-      expense = book - salvage;
-    }
+    const expense = isFinal ? book - salvage : book * rate * (halfYear && year === 1 ? 0.5 : 1);
     accumulated += expense;
     book -= expense;
     schedule.push({
