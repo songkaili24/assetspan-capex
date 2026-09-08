@@ -8,6 +8,7 @@ import { ScenarioCompareModal } from "@/components/scenarios/scenario-compare-mo
 import { CreateScenarioModal } from "@/components/scenarios/create-scenario-modal";
 import { ImpactPanel } from "@/components/scenarios/impact-panel";
 import { ScenarioAllocation } from "@/components/scenarios/scenario-allocation";
+import { FundingWaterfallChart } from "@/components/scenarios/funding-waterfall-chart";
 import { formatCurrency, formatPct, formatDate } from "@/lib/format";
 import { computeScenarioImpact } from "@/lib/forecast";
 import type { Scenario, ScenarioStatus } from "@/lib/types";
@@ -236,6 +237,10 @@ export function ScenarioManager({ initialScenarios }: ScenarioManagerProps) {
 
         <div className="mt-5">
           <ImpactPanel impact={impact} />
+        </div>
+
+        <div className="mt-6">
+          <FundingWaterfallChart scenario={selected} multiplier={sliderValue / 100} />
         </div>
 
         <ScenarioAllocation impact={impact} />
