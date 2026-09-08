@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ProjectActions } from "@/components/projects/project-actions";
 import {
   BidComparisonTable,
   BudgetBreakdown,
@@ -48,18 +48,7 @@ export default function ProjectDetailPage({ params }: ProjectDetailProps) {
         eyebrow={`${project.id} · ${project.buildingName}`}
         title={project.name}
         description={`${project.startQuarter} → ${project.endQuarter} · PM ${project.projectManager}`}
-        actions={
-          <>
-            {project.status !== "Completed" && (
-              <Button variant="outline" size="sm">
-                Log Change Order
-              </Button>
-            )}
-            <Button variant="calculation" size="sm">
-              {project.status === "Bidding" ? "Award Recommendation" : "Submit Budget Action"}
-            </Button>
-          </>
-        }
+        actions={<ProjectActions project={project} />}
       />
 
       <div className="space-y-6 p-4 sm:p-6">
