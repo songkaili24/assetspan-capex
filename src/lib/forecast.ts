@@ -124,9 +124,13 @@ export function computeReactiveVsProactive(inflationPct: number): {
 
 /**
  * Funding waterfall: walks the forecast chronologically against an annual
- * budget of `multiplier × baseline`. Unfunded requirements roll into backlog;
- * assets that can't be funded within the horizon are counted as deferred.
- * High-criticality assets fund first within each year (life safety first).
+ * budget of `multiplier × baseline`. Each fiscal year's plan is funded by
+ * that year's contribution plus the reserve's modeled opening position (one
+ * baseline contribution); unspent plan funds lapse back to the reserve rather
+ * than pre-funding later plan years, so a year whose escalated requirement
+ * exceeds its funding defers its lowest-priority assets (they are replaced
+ * off-plan). High-criticality assets fund first within each year (life
+ * safety first).
  */
 export function computeScenarioImpact(scenario: Scenario, multiplier?: number): ScenarioImpact {
   const level = multiplier ?? scenario.fundingMultiplier;
@@ -150,16 +154,17 @@ export function computeScenarioImpact(scenario: Scenario, multiplier?: number): 
   }
 
   const deferred: Asset[] = [];
-  let pool = 0;
   for (let i = 0; i < FORECAST_HORIZON; i++) {
-    pool += annualBudget;
+    // The opening reserve position is available to year 1 only — it is the
+    // fund's existing balance at plan start, not a recurring contribution.
+    let available = annualBudget + (i === 0 ? BASELINE_ANNUAL_FUNDING : 0);
     const yearAssets = windowAssets.filter(
       (a) => a.forecastReplacementYear - FORECAST_START_YEAR === i,
     );
     for (const asset of yearAssets) {
       const cost = escalate(asset.currentReplacementCost, asset.forecastReplacementYear, inflation);
-      if (pool >= cost) {
-        pool -= cost;
+      if (available >= cost) {
+        available -= cost;
       } else {
         deferred.push(asset);
       }
