@@ -6,7 +6,7 @@ import { HeaderSelect } from "./header-select";
 import { ExportMenu } from "@/components/ui/export-menu";
 import { SidebarNav } from "./sidebar";
 import { MenuIcon } from "./icons";
-import { PORTFOLIOS, FISCAL_YEARS } from "@/lib/data";
+import { PORTFOLIOS, FISCAL_YEARS, FISCAL_BUDGET } from "@/lib/data";
 import { formatCompactCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -49,11 +49,10 @@ export function TopNav() {
   const [fiscalYear, setFiscalYear] = useState(String(FISCAL_YEARS[1]));
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  // Allocated / committed / spent for the active portfolio+FY. Server-fed in
-  // production; the display contract below is what matters here.
-  const utilization = 0.94;
-  const committed = 9_620_000;
-  const allocated = 14_800_000;
+  // Live FY budget position from the seed ledger; server-fed in production.
+  const utilization = FISCAL_BUDGET.committed / FISCAL_BUDGET.allocated;
+  const committed = FISCAL_BUDGET.committed;
+  const allocated = FISCAL_BUDGET.allocated;
 
   return (
     <header className="sticky top-0 z-40 border-b border-charcoal-800/60 bg-charcoal-900">

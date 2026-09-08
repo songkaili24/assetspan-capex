@@ -60,7 +60,7 @@ export function AssetCard({ asset, onSelect, layout = "grid", className }: Asset
               Age / Life
             </dt>
             <dd className="font-mono text-figure-sm font-medium tabular-nums text-charcoal-900">
-              {asset.ageYears} / {asset.usefulLifeYears} yrs
+              {new Date().getUTCFullYear() - asset.inServiceYear} / {asset.usefulLifeYears} yrs
             </dd>
           </div>
           <div>

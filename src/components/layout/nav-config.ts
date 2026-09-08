@@ -18,11 +18,11 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Portfolio Overview", href: "/", icon: OverviewIcon },
-  { label: "Asset Registry", href: "/assets", icon: RegistryIcon, annotation: "310" },
+  { label: "Portfolio Overview", href: "/dashboard", icon: OverviewIcon },
+  { label: "Asset Registry", href: "/assets", icon: RegistryIcon, annotation: "30" },
   { label: "Lifecycle Forecasts", href: "/forecasts", icon: ForecastIcon },
-  { label: "Capital Projects", href: "/projects", icon: ProjectsIcon, annotation: "6" },
-  { label: "Budget Scenarios", href: "/scenarios", icon: ScenarioIcon },
-  { label: "Vendor Bids", href: "/bids", icon: BidsIcon, annotation: "5" },
+  { label: "Capital Projects", href: "/projects", icon: ProjectsIcon, annotation: "4" },
+  { label: "Budget Scenarios", href: "/scenarios", icon: ScenarioIcon, annotation: "3" },
+  { label: "Vendor Bids", href: "/bids", icon: BidsIcon, annotation: "4" },
   { label: "Reports", href: "/reports", icon: ReportsIcon },
 ];
